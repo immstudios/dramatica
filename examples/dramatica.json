@@ -1,0 +1,119 @@
+{
+
+"Placeholder" : {
+        "pools" : [
+            { "filters" : { "id_folder" : [5, 6, 4] }}
+        ]
+    },
+
+
+"Movie" : {
+        "block_split" : true,
+
+        "pools" : [
+            {"filters" : { "id_folder" : [1] }}
+        ],
+
+
+        "fill" : {
+            "pools" : [
+                { "filters" : { "id_folder" : [4, 5, 6] }}
+            ]
+        },
+
+        "jingles" : {
+            "pools" : [
+                { "filters" : {"id_folder" : [8], "title" : "LIKE 'Program%'" }},
+                { "filters" : {"id_folder" : [7], "title" : "LIKE 'short%'" }}
+            ]
+         }
+    },
+
+
+
+
+"MorningMourning" : {
+        "pools" : [
+            { "filters" : { "id_folder" : [4], "genre" : "~ '^3.6.4'" }}
+        ],
+
+        "fill" : {
+            "pools" : [
+                { "filters" : { "id_folder" : [4, 5, 6] }}
+            ]
+        },
+
+        "jingles" : {
+            "distance" : 300,
+            "pools" : [
+                { "weight" : 5, "filters" : {"id_folder" : [7], "title" : "LIKE 'short%'"}},
+                { "weight" : 3, "filters" : {"id_folder" : [7], "title" : "LIKE 'Morning jingle'"}},
+                { "weight" : 3, "filters" : {"title" : ["Vedeli jste", "Vedci zjistili"]}}
+             ]
+        }
+    },
+
+"NXRocks" : {
+        "pools" : [
+            { "filters" : { "id_folder" : [4], "genre" : "~ '^3.6.4.14'" }}
+        ],
+
+        "fill" : {
+            "pools" : [
+                { "filters" : { "id_folder" : [4, 5, 6] }}
+            ]
+        },
+
+        "jingles" : {
+            "distance" : 400,
+            "pools" : [
+                { "weight" : 5, "filters" : {"id_folder" : [7], "title" : "LIKE 'NX Rocks%'"}},
+                { "weight" : 3, "filters" : {"title" : ["Vedeli jste", "Vedci zjistili"]}}
+             ]
+        }
+    },
+
+
+
+"Discharge" : {
+        "pools" : [
+            { "filters" : { "id_folder" : [4], "genre" : "~ '^3.6.4.14.6'" }}
+        ],
+
+        "fill" : {
+            "pools" : [
+                { "filters" : { "id_folder" : [4, 5, 6] }}
+            ]
+        },
+
+        "jingles" : {
+            "distance" : 400,
+            "pools" : [
+                {"weight" : 1, "filters" : {"id_folder" : [7], "title" : "LIKE 'discharge-jingle%'"}}
+             ]
+        }
+    },
+
+
+
+"Graveyard" : {
+        "pools" : [
+            { "filters" : { "id_folder" : [4], "genre" : "~ '^3.6.4.14.2'" }}
+        ],
+
+        "fill" : {
+            "pools" : [
+                { "filters" : { "id_folder" : [4, 5, 6] }}
+            ]
+        },
+
+        "jingles" : {
+            "distance" : 400,
+            "pools" : [
+                {"weight" : 1, "filters" : {"id_folder" : [7], "title" : "LIKE 'short%'"}}
+             ]
+        }
+    }
+
+}
+
