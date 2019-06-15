@@ -8,9 +8,9 @@ class DramaticaPool():
         """
 
         reuse (False)
+        weight (1)
 
         """
-        self.config = kwargs
         self.parent = parent
         self.reuse = kwargs.get("reuse", False)
         self.weight = kwargs.get("weight", 1)
@@ -18,18 +18,21 @@ class DramaticaPool():
         self.take_id = 0
         self.used_assets = [item["id_asset"] for item in self.parent.parent.event.bin.items if item["id_asset"]]
 
-        # Asset conditions based on filters
-        conds_list = []
-        for key in filters:
-            if type(filters[key]) == list:
-                opts = ["'{}'".format(opt) for opt in filters[key]]
-                conds_list.append("a.meta->>'{}' IN ({})".format(key, ",".join(opts)))
-            elif type(filters[key]) == str and filters[key].split(" ")[0].lower() in ["=", "like", "~"]:
-                conds_list.append("a.meta->>'{}' {}".format(key, str(filters[key])))
-            else:
-                conds_list.append("a.meta->>'{}' = '{}'".format(key, str(filters[key])))
-        asset_conds = " AND ".join(conds_list)
+        filter_set = copy.copy(self.parent["default_filters"])
+        filter_set.update(filters)
 
+        # Asset conditions based on filters
+
+        conds_list = []
+        for key in filter_set:
+            if type(filter_set[key]) == list:
+                opts = ["'{}'".format(opt) for opt in filter_set[key]]
+                conds_list.append("a.meta->>'{}' IN ({})".format(key, ",".join(opts)))
+            elif type(filter_set[key]) == str and filter_set[key].split(" ")[0].lower() in ["=", "like", "~"]:
+                conds_list.append("a.meta->>'{}' {}".format(key, str(filter_set[key])))
+            else:
+                conds_list.append("a.meta->>'{}' = '{}'".format(key, str(filter_set[key])))
+        asset_conds = " AND ".join(conds_list)
 
         # Pool query construction
 
@@ -54,7 +57,6 @@ class DramaticaPool():
             asset.dr_distance = self.parent["search_distance"]
             asset.dr_count = 0
             self.pool[asset.id] = asset
-
 
         # Find schedule count and distance from now
 
@@ -91,15 +93,6 @@ class DramaticaPool():
         return self.pool[key]
 
 
-    def best_fit(self, duration):
-        pool = copy.deepcopy(self.pool)
-        keys = list(pool.keys())
-        keys.sort(key=lambda x: abs(pool[x].duration - duration))
-        asset = pool[keys[0]]
-        return asset
-
-
-
 
     def refine(self):
         self.take_id += 1
@@ -114,16 +107,16 @@ class DramaticaPool():
         while True:
             for rule in ruleset:
                 keys = list(pool.keys())
-                exp_ret = len(keys)
-                if exp_ret > 1000:
-                    exp_ret *= 1/2
-                elif exp_ret > 50:
-                    exp_ret *= (3/4)
+                count = len(keys)
+                if count > 1000:
+                    count *= 1/2
+                elif count > 50:
+                    count *= (3/4)
                 else:
-                    exp_ret -= 1
-                exp_ret = int(exp_ret)
+                    count -= 1
+                count = int(count)
 
-                rule(self.parent, pool, exp_ret)
+                rule(self.parent, pool, count)
 
                 if len(pool) < 2:
                     break
@@ -136,10 +129,8 @@ class DramaticaPool():
             return False
 
         asset = self.pool[id_asset]
-
-        logging.debug("Refined {}. DST:{} CNT:{}".format(asset, asset.dr_distance, asset.dr_count))
-
         self.mark_used(id_asset)
+        logging.debug("Refined {}. DST:{} CNT:{}".format(asset, asset.dr_distance, asset.dr_count))
         return asset
 
 

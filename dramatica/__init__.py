@@ -47,6 +47,7 @@ class Dramatica():
 
         self.position = 0
         self.last_jingle = 0
+        self.most_common_vals = {}
 
         self.main_pools = []
         self.jingle_pools = []
@@ -92,6 +93,14 @@ class Dramatica():
     def db(self):
         return self.parent.db
 
+    def get_most_common(self, key):
+        if not key in self.most_common_vals:
+            values = [item.asset[key] for item in self.parent.new_items if item.asset[key]]
+            if not values:
+                self.most_common_vals[key] =  False
+            self.most_common_vals[key] =  max(values, key=values.count)
+        return self.most_common_vals[key]
+
 
     def __setitem__(self, key, value):
         self.settings["key"] = value
@@ -106,6 +115,8 @@ class Dramatica():
         return self
 
     def __next__(self):
+        self.most_common_vals = {}
+
         if self.current_duration > self.target_duration:
             logging.info("Iterator stopped with duration {}".format(s2tc(self.parent.current_duration)))
             raise StopIteration

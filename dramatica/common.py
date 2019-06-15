@@ -8,6 +8,8 @@ DRAMATICA_DEFAULT_CONFIG = {
     "pool_keys" : [
             "id",
             "title",
+            "subtitle",    # we need subtitle and description to propagate the values to the event
+            "description",
             "id_folder",
             "ctime",
             "status",
@@ -40,7 +42,7 @@ DRAMATICA_DEFAULT_CONFIG = {
             "audio/bpm",
             "qc/state"
         ],
-    "filters" : {
+    "default_filters" : {
         "content_type" : VIDEO,
         "media_type" : FILE,
         "status" : ONLINE,

@@ -1,57 +1,94 @@
-def top_idxs(keys, exp_ret):
-    res =  keys[-exp_ret:]
-    return res
+#
+# Utilities
+#
 
-def bottom_idxs(keys, exp_ret):
-    res = keys[:exp_ret]
-    return res
+SIMILAR = 0
+DIFFERENT = 1
 
-def rule_distance(dramatica, pool, exp_ret):
+
+def get_value_list(key, assets):
+    values = []
+    for asset in assets:
+        value = asset[key]
+        if not asset[key]:
+            continue
+        if value in values:
+            continue
+        values.append(value)
+    return values
+
+
+def rate_similarity(pattern, values):
+    result = {}
+    if not pattern in values:
+        values.append(pattern)
+    values.sort()
+    idx = values.index(pattern)
+    for i, value in enumerate(values):
+        result[value] = abs(idx - i)
+    return result
+
+
+def refine_minimum(pool, indices, count):
+    for i in indices[count:]:
+        del(pool[i])
+
+
+def refine_maximum(pool, indices, count):
+    for i in indices[:-count]:
+        del(pool[i])
+
+
+def refine_content(pool, target_key, target_value, count, find=SIMILAR):
+    keys = list(pool.keys())
+    values = get_value_list(target_key, [pool[i] for i in pool])
+    if not values:
+        return
+    median_value = values[int(len(values)/2)]
+    ratings = rate_similarity(target_value, values)
+    keys.sort(key=lambda x: ratings[pool[x].get(target_key, median_value)])
+    if find == SIMILAR:
+        refine_minimum(pool, keys, count)
+    else:
+        refine_maximum(pool, keys, count)
+
+#
+# Rules
+#
+
+def rule_distance(dramatica, pool, count):
     keys = list(pool.keys())
     keys.sort(key=lambda x: pool[x].dr_distance)
-    for key in bottom_idxs(keys, len(keys) - exp_ret):
-        del (pool[key])
+    refine_maximum(pool, keys, count)
 
-def rule_count(dramatica, pool, exp_ret):
+def rule_count(dramatica, pool, count):
     keys = list(pool.keys())
     keys.sort(key=lambda x: pool[x].dr_count)
-    for key in top_idxs(keys, len(keys) - exp_ret):
-        del (pool[key])
+    refine_minimum(pool, keys, count)
 
-def rule_artist(dramatica, pool, exp_ret):
+def rule_artist(dramatica, pool, count):
     keys = list(pool.keys())
     keys.sort(key=lambda x: pool[x]["role/performer"] in [item["role/performer"] for item in dramatica.parent.new_items])
-    for key in top_idxs(keys, len(keys) - exp_ret):
-        del (pool[key])
+    refine_minimum(pool, keys, count)
 
-def rule_genre(dramatica, pool, exp_ret):
-    keys = list(pool.keys())
-    try:
-        late_genre = dramatica.parent.new_items[-1]["genre"]
-    except IndexError:
-        return
-    if not late_genre: # TODO: search history
-        return
-    keys.sort(key=lambda x: pool[x]["genre"] == late_genre)
-    for key in top_idxs(keys, len(keys) - exp_ret):
-        del (pool[key])
+def rule_genre(dramatica, pool, count):
+    target_key = "genre"
+    target_value = "3.6.4.14"
+    find = DIFFERENT
+    refine_content(pool, target_key, target_value, count, find)
 
-def rule_format(dramatica, pool, exp_ret):
-    keys = list(pool.keys())
-    try:
-        late_format = dramatica.parent.new_items[-1]["editorial_format"]
-    except IndexError:
-        return
-    if not late_format: # TODO: search history
-        return
-    keys.sort(key=lambda x: pool[x]["editorial_format"] == late_format)
-    for key in bottom_idxs(keys, len(keys) - exp_ret):
-        del (pool[key])
+def rule_format(dramatica, pool, count):
+    target_key = "genre"
+    target_value = "3.6.4.14"
+    find = SIMILAR
+    refine_content(pool, target_key, target_value, count, find)
 
-def rule_bpm(dramatica, pool, exp_ret):
+def rule_bpm(dramatica, pool, count):
     pass #TODO: vyrobit a pridat do processes
 
-
+#
+# Rule order
+#
 
 ruleset = [
         rule_distance,
