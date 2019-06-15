@@ -54,6 +54,12 @@ class DramaticaPool():
             if asset.duration > tdur:
                 continue
 
+            if asset["content_alert/scheme"] in self.parent["pg"]:
+                if int(self.parent.parent.event.show("start", format="%H")) < self.parent["pg_start"]:
+                    continue
+                elif int(self.parent.parent.next_event.show("start", format="%H")) > self.parent["pg_end"]:
+                    continue
+
             asset.dr_distance = self.parent["search_distance"]
             asset.dr_count = 0
             self.pool[asset.id] = asset

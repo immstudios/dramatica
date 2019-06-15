@@ -42,11 +42,31 @@ DRAMATICA_DEFAULT_CONFIG = {
             "audio/bpm",
             "qc/state"
         ],
+
+
     "default_filters" : {
         "content_type" : VIDEO,
         "media_type" : FILE,
         "status" : ONLINE,
         "qc/state" : 4
-    }
+    },
+
+    #
+    # Parental lock. Do not schedule assets of inpropriate assets between 06:00 and 22:00
+    #
+
+    "pg_start" : 22,
+    "pg_end" : 6,
+    "pg" : [
+            "1.4", "1.5",   # AR-INCAA
+            "10.4", "10.5", # CA-OFRB
+            "12.6",         # CA-CBSC-CCNR-English and third-languages
+            "14.6",
+            "15.3", "15.4", "15.5",
+            "16.1.2",
+            "17.5", "17.6",
+            "21.3",         # Denmark radio
+            "53.1.4",       # CZECH
+        ]
 }
 

@@ -51,3 +51,5 @@ It assumes EBUCore schemes are used, but similar structure should also work.
 Following configuration is required
 
  - `genre` and `editorial_format` types must be of `SELECT` class. `LIST` will not work.
+ - `content_alert/scheme` is supported to disallow scheduling inappropriate content
+    during the day. Currently only a few snadards are implemented (czech, danish,...)
