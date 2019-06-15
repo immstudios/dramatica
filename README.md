@@ -8,7 +8,7 @@ Usage
 As a `solver` plugin, Dramatica replaces rundown placeholders with assets according to
 given rules.
 
-## Current features
+### Current features
 
 Dramatica currently takes in account following features:
 
@@ -19,7 +19,7 @@ Dramatica currently takes in account following features:
  - Song performer
  - Asset validity (QC State)
 
-## Limitations
+### Limitations
 
 Following features are not supported yet (but they are planned)
 
@@ -51,6 +51,3 @@ It assumes EBUCore schemes are used, but similar structure should also work.
 Following configuration is required
 
  - `genre` and `editorial_format` types must be of `SELECT` class. `LIST` will not work.
- - `content_alert/scheme` is supported to disallow scheduling inappropriate content
-    during the day. Default configuration however uses Czech (53.x) schemes and must be overriden
-    to use another standard.
