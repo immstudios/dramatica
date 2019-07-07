@@ -1,3 +1,5 @@
+import statistics
+
 #
 # Utilities
 #
@@ -68,33 +70,60 @@ def rule_count(dramatica, pool, count):
 
 def rule_artist(dramatica, pool, count):
     keys = list(pool.keys())
-    keys.sort(key=lambda x: pool[x]["role/performer"] in [item["role/performer"] for item in dramatica.parent.new_items])
+    target_key = "role/performer"
+    keys.sort(key=lambda x: pool[x][target_key] in [a[target_key] for a in dramatica.new_assets if a[target_key]])
+    refine_minimum(pool, keys, count)
+
+def rule_album(dramatica, pool, count):
+    keys = list(pool.keys())
+    target_key = "album"
+    keys.sort(key=lambda x: pool[x][target_key] in [a[target_key] for a in dramatica.new_assets if a[target_key]])
     refine_minimum(pool, keys, count)
 
 def rule_genre(dramatica, pool, count):
     target_key = "genre"
-    target_value = "3.6.4.14"
-    find = DIFFERENT
+    find = SIMILAR
+    target_value = dramatica.last_attribs.get(target_key, None)
+    if not target_value:
+        return
     refine_content(pool, target_key, target_value, count, find)
+    nvals = set([pool[x][target_key] for x in pool.keys()])
 
 def rule_format(dramatica, pool, count):
-    target_key = "genre"
-    target_value = "3.6.4.14"
-    find = SIMILAR
+    target_key = "editorial_format"
+    find = DIFFERENT
+    target_value = dramatica.last_attribs.get(target_key, None)
+    if not target_value:
+        return
     refine_content(pool, target_key, target_value, count, find)
+    nvals = set([pool[x][target_key] for x in pool.keys()])
 
 def rule_bpm(dramatica, pool, count):
-    pass #TODO: vyrobit a pridat do processes
+    lbpm = dramatica.last_attribs.get("audio/bpm", None)
+    if not lbpm:
+        return
+    mbpm = dramatica.refine_cache.get("bpm_median", None)
+    if not mbpm:
+        mbpm = statistics.median([pool[x]["audio/bpm"] for x in pool.keys() ])
+        dramatica.refine_cache["bpm_median"] = mbpm
+    keys = list(pool.keys())
+    if lbpm < mbpm:
+        keys.sort(key=lambda x: (pool[x]["audio/bpm"] or mbpm) >= mbpm)
+    else:
+        keys.sort(key=lambda x: (pool[x]["audio/bpm"] or mbpm) <= mbpm)
+    refine_maximum(pool, keys, count)
 
 #
 # Rule order
 #
 
 ruleset = [
-        rule_distance,
         rule_count,
+        rule_distance,
         rule_artist,
+        rule_album,
         rule_genre,
         rule_format,
-    ]
+        rule_bpm,
+]
 

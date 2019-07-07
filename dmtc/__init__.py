@@ -1,18 +1,21 @@
 """
 
-Main:
+Main
     Primary block content
 
     block_split
         When selected, block is splitted after the first asset from primary pool is
         inserted.
+
     update_event_meta
+        When block_split mode is active, this option updates parent event metadata
+        (title, description and so on) using the inserted asset.
 
 Jingles
-    appear anywhere within the block when "span" time is reached
+    Appear anywhere within the block when "span" time is reached
 
 Fill
-    used to fill empty space at the end of the block
+    Used to fill empty space at the end of the block
 
 
 """
@@ -45,9 +48,13 @@ class Dramatica():
 
         logging.info("Initializing Dramatica for {}".format(self.parent.placeholder))
 
+        self.last_attribs = {}
+        self.new_assets = []
+
         self.position = 0
         self.last_jingle = 0
         self.most_common_vals = {}
+        self.refine_cache = {}
 
         self.main_pools = []
         self.jingle_pools = []
@@ -115,7 +122,14 @@ class Dramatica():
         return self
 
     def __next__(self):
+        asset = self.refine()
+        self.new_assets.append(asset)
+        return asset
+
+    def refine(self):
+
         self.most_common_vals = {}
+        self.refine_cache = {}
 
         if self.current_duration > self.target_duration:
             logging.info("Iterator stopped with duration {}".format(s2tc(self.parent.current_duration)))
@@ -127,7 +141,8 @@ class Dramatica():
 
         jingle_pool_ids = []
         for i, pool in enumerate(self.jingle_pools):
-            jingle_pool_ids.extend([i]* pool.weight)
+            if pool.pool:
+                jingle_pool_ids.extend([i]* pool.weight)
 
         if jingle_pool_ids:
             if self.position - self.last_jingle > self.get("jingles", {}).get("distance", 800):
@@ -171,6 +186,7 @@ class Dramatica():
                                 value = asset[key]
                                 if value:
                                     self.parent.event[key] = value
+                        self.parent.event["id_asset"] = asset.id
                         self.parent.event.save()
 
                     split_position = self.parent.event["start"] + self.position

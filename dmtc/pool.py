@@ -16,6 +16,7 @@ class DramaticaPool():
         self.weight = kwargs.get("weight", 1)
         self.pool = {}
         self.take_id = 0
+        self.last_asset = 0
         self.used_assets = [item["id_asset"] for item in self.parent.parent.event.bin.items if item["id_asset"]]
 
         filter_set = copy.copy(self.parent["default_filters"])
@@ -94,6 +95,8 @@ class DramaticaPool():
             asset = self.pool[id_asset]
             asset.dr_distance = min(asset.dr_distance, distance)
             asset.dr_count += 1
+        logging.debug("Created pool with {} assets".format(len(self.pool)))
+
 
     def __getitem__(self, key):
         return self.pool[key]
@@ -118,6 +121,8 @@ class DramaticaPool():
                     count *= 1/2
                 elif count > 50:
                     count *= (3/4)
+                elif count == 1:
+                    break
                 else:
                     count -= 1
                 count = int(count)
@@ -137,6 +142,24 @@ class DramaticaPool():
         asset = self.pool[id_asset]
         self.mark_used(id_asset)
         logging.debug("Refined {}. DST:{} CNT:{}".format(asset, asset.dr_distance, asset.dr_count))
+
+        for key in [
+                    "editorial_format",
+                    "genre",
+                    "album",
+                    "role/director",
+                    "role/performer",
+                    "role/composer",
+                    "audio/bpm",
+                    "atmosphere",
+                    "place",
+                    "intention",
+                    "intended_audience",
+                ]:
+            if asset[key]:
+                self.parent.last_attribs[key] = asset[key]
+
+        self.last_asset_id = id_asset
         return asset
 
 

@@ -16,7 +16,8 @@ Dramatica currently takes in account following features:
  - Distance from last run
  - Asset genre
  - Asset editorial format
- - Song performer
+ - Song performer and album
+ - Music tempo (BPM)
  - Asset validity (QC State)
 
 ### Limitations
@@ -27,7 +28,7 @@ Following features are not supported yet (but they are planned)
  - Taking `intention` in account
  - Taking `atmosphere` in account
  - Taking `intended_audience` in account
- - Taking automatically extracted metadata (BPM, overal color tone, edit rate...) in account
+ - Taking automatically extracted metadata (overal color tone, edit rate...) in account
  - Subclips
  - Series planning
  - Commercials
@@ -38,10 +39,9 @@ Following features are not supported yet (but they are planned)
 Installation
 ------------
 
-1. Clone this repository to `.nx/scripts/v5/common` directory and rename it to `dramatica_nebula`.
-2. Copy `support/dramatica.py` to `.nx/scripts/v5/solver/dramatica.py`
-3. Copy `examples/dramatica.json` to `.nx/dramatica.json` and tweak the rules to match your needs.
-4. Add `dramatica` to the `solvers` list of your playout channel configuration
+1. Clone this repository to `.nx/scripts/v5/solvers` directory
+2. Copy `examples/dramatica.json` to `.nx/dramatica.json` and tweak the rules to match your needs.
+3. Add `dramatica` to the `solvers` list of your playout channel configuration
 
 ## Requirements
 
@@ -52,4 +52,4 @@ Following configuration is required
 
  - `genre` and `editorial_format` types must be of `SELECT` class. `LIST` will not work.
  - `content_alert/scheme` is supported to disallow scheduling inappropriate content
-    during the day. Currently only a few snadards are implemented (czech, danish,...)
+    during the day. Currently only a few stadards are implemented (czech, danish,...)
