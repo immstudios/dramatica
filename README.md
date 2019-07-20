@@ -7,18 +7,22 @@ Usage
 
 As a `solver` plugin, Dramatica replaces rundown placeholders with assets according to
 given rules.
+Solving can be triggered manually (hybrid micro-scheduling mode) using [Firefly](https://github.com/nebulabroadcast/firefly)
+or automatically using CRON or worker services (autonomous channels).
+
 
 ### Current features
 
 Dramatica currently takes in account following features:
 
- - Asset run count
+ - Run count
  - Distance from last run
- - Asset genre
- - Asset editorial format
+ - Genre
+ - Editorial format
  - Song performer and album
  - Music tempo (BPM)
  - Asset validity (QC State)
+ - Content alert scheme (Parental guidance rating)
 
 ### Limitations
 
@@ -43,10 +47,11 @@ Installation
 2. Copy `examples/dramatica.json` to `.nx/dramatica.json` and tweak the rules to match your needs.
 3. Add `dramatica` to the `solvers` list of your playout channel configuration
 
-## Requirements
+### Requirements
 
 Dramatica uses default Nebula metadata types extensively.
-It assumes EBUCore schemes are used, but similar structure should also work.
+It assumes [EBUCore](https://tech.ebu.ch/MetadataEbuCore) classification schemes are used (Nebula default),
+but similar structure should also work.
 
 Following configuration is required
 
