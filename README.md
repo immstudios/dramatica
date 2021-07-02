@@ -43,7 +43,7 @@ Following features are not supported yet (but they are planned)
 Installation
 ------------
 
-1. Clone this repository to `.nx/scripts/v5/solvers` directory
+1. Clone this repository to `.nx/scripts/v5/solver` directory
 2. Copy `examples/dramatica.json` to `.nx/dramatica.json` and tweak the rules to match your needs.
 3. Add `dramatica` to the `solvers` list of your playout channel configuration
 
